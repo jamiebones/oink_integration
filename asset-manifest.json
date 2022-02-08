@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/oink_integration/static/css/main.678e5f2c.chunk.css",
+    "main.js": "/oink_integration/static/js/main.022f75a7.chunk.js",
+    "main.js.map": "/oink_integration/static/js/main.022f75a7.chunk.js.map",
+    "runtime-main.js": "/oink_integration/static/js/runtime-main.3bf754d4.js",
+    "runtime-main.js.map": "/oink_integration/static/js/runtime-main.3bf754d4.js.map",
+    "static/css/2.8c0e6b67.chunk.css": "/oink_integration/static/css/2.8c0e6b67.chunk.css",
+    "static/js/2.929f4c40.chunk.js": "/oink_integration/static/js/2.929f4c40.chunk.js",
+    "static/js/2.929f4c40.chunk.js.map": "/oink_integration/static/js/2.929f4c40.chunk.js.map",
+    "static/js/3.38747aee.chunk.js": "/oink_integration/static/js/3.38747aee.chunk.js",
+    "static/js/3.38747aee.chunk.js.map": "/oink_integration/static/js/3.38747aee.chunk.js.map",
+    "index.html": "/oink_integration/index.html",
+    "static/css/2.8c0e6b67.chunk.css.map": "/oink_integration/static/css/2.8c0e6b67.chunk.css.map",
+    "static/css/main.678e5f2c.chunk.css.map": "/oink_integration/static/css/main.678e5f2c.chunk.css.map",
+    "static/js/2.929f4c40.chunk.js.LICENSE.txt": "/oink_integration/static/js/2.929f4c40.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3bf754d4.js",
+    "static/css/2.8c0e6b67.chunk.css",
+    "static/js/2.929f4c40.chunk.js",
+    "static/css/main.678e5f2c.chunk.css",
+    "static/js/main.022f75a7.chunk.js"
+  ]
+}
