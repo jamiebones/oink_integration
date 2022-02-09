@@ -39,10 +39,7 @@ const BottomApp = ({address, referralWithdrawn,
     return <BottomAppStyles>
 <div className="card">
 <p>
-  OinK Network Token Address- 0x4eACB72F6BA99e1C69ac053dcb281387fF374d22
-</p>
-<p>
-  Started on: January 25,2022 at 2PM UTC
+  OinK Network Token Address - 0x12855d8b8eb0fc99a775eff2c7e3a02005d89c4a
 </p>
 
 <div className="div-terms">

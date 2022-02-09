@@ -344,7 +344,7 @@ const disconnect = useCallback(
 
          ] = await Promise.all([
     bscContract.balanceOf(address),
-    contract.getUserBUSDBalance( address),
+    bscContract.balanceOf( address),
     contract.totalSupply(),
     contract.availableSupply(),
     contract.limitSupply(),
@@ -660,7 +660,7 @@ const disconnect = useCallback(
 
                                <button className="btn btn-primary" type="button" onClick={()=>setBscStateText(bscBalance)}>Max</button>
                                 
-                                <button className="btn btn-success" type="button" onClick={stakeBSCToken} >Stake</button>
+                                <button className="btn btn-success" type="button" onClick={stakeBSCToken} >MINT</button>
                             </div>
 
 
@@ -697,7 +697,7 @@ const disconnect = useCallback(
                        <div className="div-three">
                             <p className="float-right">
                               <button className="btn btn-success" onClick={unstackedToken}>
-                                   unstaked
+                                   UNSTAKE
                               </button>
                             
                             </p>

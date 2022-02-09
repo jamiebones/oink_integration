@@ -27,8 +27,8 @@ const ReferalComponent = ({address, referralWithdrawn, referralTotalBonus,
             <div className="col-md-6">
                 <p>YOUR REFERAL LINK</p>
                 <div className="input-group">
-                    <input type="text" readOnly className="form-control" value={`https://siteName?ref=${address}`}/>
-                    <button type="button" className="btn btn-primary" onClick={()=>copyToClipBoard(`https://siteName?ref=${address}`)}
+                    <input type="text" readOnly className="form-control" value={`https://oinknetwork.io?ref=${address}`}/>
+                    <button type="button" className="btn btn-primary" onClick={()=>copyToClipBoard(`https://oinknetwork.io?ref=${address}`)}
                     
                     >Copy</button>
                 </div>
