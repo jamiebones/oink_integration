@@ -7,7 +7,11 @@ import BSCABI from "./utils/bsc.json";
 import "./index.css";
 
 import WalletConnectProvider from '@walletconnect/web3-provider'
-import WalletLink from 'walletlink'
+import WalletLink from 'walletlink';
+
+import logo from "./assets/oink.jpeg";
+
+import BottomApp from "./BottomApp";
 
 
 const trimAddress = ( address ) => {
@@ -16,6 +20,20 @@ const trimAddress = ( address ) => {
   const endpart = address.slice(address.length - 4, address.length );
   return `${firstpart}${midpart}${endpart}`
 }
+
+const dateConverter = (secs) => {
+  var sec_num = parseInt(secs, 10)
+  var hours   = Math.floor(sec_num / 3600)
+  var minutes = Math.floor(sec_num / 60) % 60
+  var seconds = sec_num % 60
+
+  return [hours,minutes,seconds]
+      .map(v => v < 10 ? "0" + v : v)
+      .filter((v,i) => v !== "00" || i > 0)
+      .join(":")
+}
+
+
 
 
 const contractAddress = "0x12855d8B8eB0FC99a775eFf2c7e3A02005d89c4A";
@@ -29,7 +47,7 @@ const AppStyles =  styled.div`
 }
    .display-div {
      height: 400px;
-     background: #f92c85;
+     background: #f3ABB9;
      border-radius:20px;
     .display-divHeading{
       height: 150px;
@@ -46,8 +64,8 @@ const AppStyles =  styled.div`
      }
     }
     .para-details{
-      font-size: 17px;
-      color: #fff;
+      font-size: 20px;
+      color: #2910f9;
     }
     .para-detailsBig{
       font-size: 20px;
@@ -59,7 +77,7 @@ const AppStyles =  styled.div`
    }
 
    .div-card{
-     background: #f92c85;
+     background: #f3ABB9;
      height: 670px;
      border-radius:20px;
      margin: 30px 0 30px 0;
@@ -101,12 +119,19 @@ const AppStyles =  styled.div`
    .btn-space{
      margin-left: 5px;
    }
+   .im{
+     color: purple;
+   }
+
+   .price{
+     font-size: 20px;
+   }
+
+   .time{
+     font-size: 20px;
+   }
 
 `
-
-
-//const INFURA_ID = '460f40a260564ac4a4f4b3fffb032dad'
-
 
 
 const providerOptions = {
@@ -170,7 +195,7 @@ const url = 'https://bsc-dataseed.binance.org/';
  const [myOinkStake, setMyOinkStake ] = useState("0");
  const [totalOinkStake, setTotalOinkStake ] = useState("0")
 
- const [userBscStaked, setUserBscStaked ] = useState("0");
+ const [userBscStaked, setUserBUSDStaked ] = useState("0");
  const [totalBscStaked, setTotalBscStaked ] = useState("0")
 
  const [tokenPrice, setTokenPrice ] = useState("0");
@@ -189,8 +214,19 @@ const url = 'https://bsc-dataseed.binance.org/';
 
  const [oinkToSell, setOinkToSell] = useState("0");
 
+ const [contractBUSDBalance, setContractBUSDBalance] = useState("0");
+
+ const [userTokenBalance, setUserTokenBalance] = useState("0");
 
 
+
+
+ const [referralWithdrawn, setReferralWithdraw] = useState("0");
+ const [referralTotalBonus, setReferralTotalBonus] = useState("0");
+ const [referralBonus, setReferralBonus] = useState("0");
+
+
+ 
 const [provider, setProvider] = useState("");
 const [web3Provider, setweb3Provider] = useState("");
 const [address, setAddress] = useState("");
@@ -298,11 +334,17 @@ const disconnect = useCallback(
         userUnclaimTokenMinting,
         totalSoldToday,
         totalAvailableToSell,
-        getTimeToNextDay
+        getTimeToNextDay,
+        contractBUSDBalance,
+
+        referralWithdrawn,
+        referralTotalBonus,
+        referralBonus
+        
 
          ] = await Promise.all([
     bscContract.balanceOf(address),
-    bscContract.balanceOf( address),
+    contract.getUserBUSDBalance( address),
     contract.totalSupply(),
     contract.availableSupply(),
     contract.limitSupply(),
@@ -316,11 +358,17 @@ const disconnect = useCallback(
     contract.getUserUnclaimedTokens_M(address),
     contract.getTokenSoldToday(),
     contract.getTokenAvailableToSell(),
-    contract.getTimeToNextDay()
+    contract.getTimeToNextDay(),
+    contract.getContractBUSDBalance(),
+
+    contract.getUserReferralWithdrawn(address),
+    contract.getUserReferralTotalBonus(address),
+    contract.getUserReferralBonus(address)
+  
 
    ])
 
-
+  
    //parse the values here
    oinkbalance = parseFloat(ethers.utils.formatEther(oinkbalance)).toFixed(2);
    bscBalance = parseFloat(ethers.utils.formatEther(bscBalance)).toFixed(2);
@@ -331,37 +379,48 @@ const disconnect = useCallback(
    userBscBal = parseFloat(ethers.utils.formatEther(userBscBal)).toFixed(2)
    userBscStaked = parseFloat(ethers.utils.formatEther(userBscStaked)).toFixed(2)
    userTokenBalance = parseFloat(ethers.utils.formatEther(userTokenBalance)).toFixed(2)
-   tokenPrice = parseFloat(ethers.utils.formatEther(tokenPrice)).toFixed(2);
+   tokenPrice = ethers.utils.formatUnits(tokenPrice, "18");
    totalStakedToken = parseFloat(ethers.utils.formatEther(totalStakedToken)).toFixed(2)
    userUnclaimedToken = parseFloat(ethers.utils.formatEther(userUnclaimedToken)).toFixed(2)
    userUnclaimTokenMinting = parseFloat(ethers.utils.formatEther(userUnclaimTokenMinting)).toFixed(2)
    totalSoldToday = parseFloat(ethers.utils.formatEther(totalSoldToday)).toFixed(2);
    totalAvailableToSell = parseFloat(ethers.utils.formatEther(totalAvailableToSell)).toFixed(2);
-   getTimeToNextDay = parseFloat(ethers.utils.formatEther(getTimeToNextDay)).toFixed(2);
+
+    referralWithdrawn = parseFloat(ethers.utils.formatEther(referralWithdrawn)).toFixed(2);
+    referralTotalBonus = parseFloat(ethers.utils.formatEther(referralTotalBonus)).toFixed(2);
+    referralBonus = parseFloat(ethers.utils.formatEther(referralBonus)).toFixed(2);
+
+   
+   getTimeToNextDay = getTimeToNextDay.toString();
+
+   contractBUSDBalance = parseFloat(ethers.utils.formatEther(contractBUSDBalance)).toFixed(2);
 
 
-   //let totalSkakedBsc = 
+   let tokenCorrectedDecimal = parseFloat(tokenPrice);
 
-  
-
-
-   //const [myOinkStake, setMyOinkStake ] = useState("0");
-   //const [totalOinkStake, setTotalOinkStake ] = useState("0")
-
-   //get the bsc contract 
     setTotalSupply(total);
     setCirculatingSupply(supply);
     setAvailableSupply(availableSupply);
     setBscBalance(bscBalance);
     setOinktokenBalance(oinkbalance);
     setMyOinkStake(myOinkStake)
-    setTokenPrice(tokenPrice)
+    setTokenPrice(tokenCorrectedDecimal)
     setTotalStakedToken(totalStakedToken)
     setUserUnclaimedToken(userUnclaimedToken);
     setUserUnclaimTokenMinting(userUnclaimTokenMinting);
     setTodaySoldToday(totalSoldToday)
     setTodayAvailableToSellToday(totalAvailableToSell)
     setTimeToNextDay(getTimeToNextDay)
+    setUserTokenBalance(userTokenBalance);
+    setUserBUSDStaked(userBscStaked);
+    setContractBUSDBalance(contractBUSDBalance);
+
+
+   setReferralWithdraw(referralWithdrawn);
+   setReferralTotalBonus(referralTotalBonus);
+   setReferralBonus(referralBonus)
+
+
 
     
  }
@@ -403,7 +462,6 @@ const disconnect = useCallback(
   const oinkContract = new ethers.Contract(contractAddress, ABI, web3Provider );
   try {
     await oinkContract.connect(signer).stakeBUSD(addressZero, ethers.utils.parseEther(bscStakeText));
-    
     alert("BSC token staked");
   } catch (error) {
     console.log(error)
@@ -442,9 +500,19 @@ const disconnect = useCallback(
     alert("Oink token sold");
   } catch (error) {
     console.log(error)
-    alert(`There was an error please try again. ${error.message}`)
+    alert(`There was an error please try again. ${error.data.message}`)
   }
  }
+
+ const withDrawBonus = async () => {
+  try {
+    const oinkContract = new ethers.Contract(contractAddress, ABI, web3Provider );
+    await oinkContract.connect(signer).withdrawRef();
+    alert("Bonus withdrawn")
+  } catch (error) {
+    alert(`There was an error : ${error.data.message}`)
+  }
+}
 
  
 
@@ -454,7 +522,11 @@ const disconnect = useCallback(
     <div className="container-fluid">
       <nav className="navbar navbar-light bg-light">
         <div className="container-fluid">
-          <a className="navbar-brand">$OINK</a>
+          
+          <a className="navbar-brand" href="#">
+             <img src={logo} alt="" width="50" height="34" className="im d-inline-block align-text-top"/>
+             $OINK NETWORK
+          </a>
           <form className="d-flex">
           
              {web3Provider ? (
@@ -492,7 +564,7 @@ const disconnect = useCallback(
                 
                     <div className="d-flex align-items-center flex-column div-price">
                     <p className="para-details">$OINK Price</p>
-                    <p>{tokenPrice}</p>
+                    <p className="price">{tokenPrice}</p>
               
                   
                 </div>
@@ -541,7 +613,7 @@ const disconnect = useCallback(
                        <div className="div-two">
                          <p>APR <span>1460%</span></p>
                          <p>My Stake <span>{userBscStaked } BUSD</span></p>
-                         <p>Total Staked <span>{totalBscStaked} $BUSD</span></p>
+                         <p>Total Staked <span>{contractBUSDBalance} $BUSD</span></p>
                        </div>
                        <div className="div-three">
                             <p className="heading">$OINK Minted</p>
@@ -562,13 +634,13 @@ const disconnect = useCallback(
                             <div>
                             
                             <p>Approve & BUSD </p>
-                            <div class="input-group mb-3">
+                            <div className="input-group mb-3">
                               
-                             <input type="text" class="form-control" placeholder="Amount to approve" 
+                             <input type="text" className="form-control" placeholder="Amount to approve" 
                             aria-label="Amount to approve" aria-describedby="approve" onChange={
                              (e)=>setBscApprovedAmount(e.target.value)
                              }/>
-                            <button class="btn btn-primary" type="button" 
+                            <button className="btn btn-primary" type="button" 
                             id="approve" onClick={approveBSCTokenWithdrawal} >Approve</button>
                            </div>
                               
@@ -577,18 +649,18 @@ const disconnect = useCallback(
 
                             <div>
                             <p>No Minimum Amount</p>
-                            <div class="input-group mb-3">
+                            <div className="input-group mb-3">
                               
                              
-                           <div class="input-group">
-                              <input type="text" class="form-control" placeholder="Amount to stake" 
+                           <div className="input-group">
+                              <input type="text" className="form-control" placeholder="Amount to stake" 
                             aria-label="Amount to stake" aria-describedby="approve" type="number" value={bscStakeText}
                             className="form-control" onChange={
                               (e)=>setBscStateText(e.target.value)}/>
 
-                               <button class="btn btn-primary" type="button" onClick={()=>setBscStateText(bscBalance)}>Max</button>
+                               <button className="btn btn-primary" type="button" onClick={()=>setBscStateText(bscBalance)}>Max</button>
                                 
-                                <button class="btn btn-success" type="button" onClick={stakeBSCToken} >Stake</button>
+                                <button className="btn btn-success" type="button" onClick={stakeBSCToken} >Stake</button>
                             </div>
 
 
@@ -610,9 +682,9 @@ const disconnect = useCallback(
                       <p className="heading">STAKE $OINK</p>
                             
                            <p>
-                              Stake $OINK to earn more $DUCK
+                              Stake $OINK to earn more $OINK
                               You can stake as many times as you want
-                              You can unstake your $DUCK after 7 days
+                              You can unstake your $OINK after 7 days
                            </p>
                        </div>
 
@@ -653,17 +725,17 @@ const disconnect = useCallback(
                                 <p>No Minimum Amount</p>
                                   
                              
-                           <div class="input-group">
+                           <div className="input-group">
                              
                                <input type="text" type="number" value={tokenToStake}
                                    className="form-control" onChange={
                                      (e)=>setTokenToStake(e.target.value)
                                    }/>
 
-                               <button class="btn btn-primary" type="button" onClick={()=>setTokenToStake(bscBalance)} type="button">
+                               <button className="btn btn-primary" type="button" onClick={()=>setTokenToStake(bscBalance)} type="button">
                                     MAX</button>
                                 
-                                <button class="btn btn-success" type="button"  onClick={stakeOinkToken} type="button">
+                                <button className="btn btn-success" type="button"  onClick={stakeOinkToken} type="button">
                                     STAKE
                                 </button>
                             </div>
@@ -673,26 +745,9 @@ const disconnect = useCallback(
 
 
                        </div>
-                       <p className="text-center">Wallet Balance: {bscBalance} $BUSD </p>
+                       <p className="text-center">Wallet Balance: {userTokenBalance} $OINK </p>
                    </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -715,7 +770,7 @@ const disconnect = useCallback(
                        <div className="div-two">
                          <p>Sold Today <span>{totalSoldToday}</span></p>
                          <p>Available Today <span>{totalAvailableToSell}</span></p>
-                         <p>Reset in <span>{getTimeToNextDay}</span></p>
+                         <p>Reset in <span className="time">{dateConverter(getTimeToNextDay)}</span></p>
                        </div>
                        <div className="div-three">
                            
@@ -728,7 +783,7 @@ const disconnect = useCallback(
                           
                           <p>You will get</p>
                                    
-                            <div class="input-group">
+                            <div className="input-group">
                              
                                  <input type="text" type="number" value={oinkToSell}
                                    className="form-control" onChange={
@@ -745,7 +800,7 @@ const disconnect = useCallback(
 
 
                        </div>
-                       <p className="text-center">Wallet Balance: {bscBalance} $BUSD </p>
+                       <p className="text-center">Wallet Balance: {userTokenBalance} $OINK </p>
                    </div>
                 </div>
 
@@ -754,6 +809,23 @@ const disconnect = useCallback(
            </div>
       </div>
     </div>
+
+    <div className="row align-items-start">
+        <div className="col-md-8 offset-md-2">
+           <div className="row">
+
+             <BottomApp address={address} 
+             referralWithdrawn={referralWithdrawn} 
+             referralTotalBonus={referralTotalBonus}
+             referralBonus={referralBonus}
+             withDrawBonus={withDrawBonus}
+           />
+         </div>
+      </div>
+      </div>
+
+
+
     </div>
     </AppStyles>
   );
