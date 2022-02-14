@@ -176,6 +176,7 @@ if (typeof window !== 'undefined') {
 
 
 function App() {
+  
 const bscAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const url = 'https://bsc-dataseed.binance.org/';
  const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
