@@ -18,9 +18,16 @@ const copyToClipBoard = (text) => {
     alert("copied!")
 };
 
+const splitAndAdd = (string) => {
+  let splitString = string.split(",");
+  let total = +splitString[0] + +splitString[1] + +splitString[2];
+  return total;
+  
+}
+
 
 const ReferalComponent = ({address, referralWithdrawn, referralTotalBonus, 
-                           referralBonus, withDrawBonus}) => {
+                           referralBonus, withDrawBonus, totalReferral}) => {
     return <ReferalComponentStyles>
        <div className="card">
         <div className="row mb-5">
@@ -56,6 +63,11 @@ const ReferalComponent = ({address, referralWithdrawn, referralTotalBonus,
                 <p>Total Referral Withdrawn</p>
                 <p className="ref-display">
                    {referralWithdrawn}
+                </p>
+
+                <p>Total Referral </p>
+                <p className="ref-display">
+                    {splitAndAdd(totalReferral)}
                 </p>
             </div>
 

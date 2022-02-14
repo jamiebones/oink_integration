@@ -34,7 +34,7 @@ const BottomAppStyles = styled.div`
 
 
 const BottomApp = ({address, referralWithdrawn, 
-                    referralTotalBonus, referralBonus,
+                    referralTotalBonus, referralBonus,totalReferral,
                     withDrawBonus}) => {
     return <BottomAppStyles>
 <div className="card">
@@ -76,6 +76,7 @@ Example: If you invest 100 BUSD, you will receive 4 OINK TOKEN daily.
 </div>
 <ReferalComponent address={address} referralWithdrawn={referralWithdrawn} 
   referralTotalBonus={referralTotalBonus} referralBonus={referralBonus} 
+  totalReferral={totalReferral}
   withDrawBonus={withDrawBonus}/>
 </BottomAppStyles>
 }
